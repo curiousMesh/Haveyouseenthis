@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Have You Seen This?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #faf6f0;
+      --bg2:       #f3ece1;
+      --ink:       #1c1814;
+      --ink-soft:  #4a443c;
+      --muted:     #9a9187;
+      --amber:     #c2873a;
+      --amber-dim: #e8c98a;
+      --rule:      #e0d8cc;
+      --white:     #ffffff;
+      --glow:      rgba(194,135,58,0.13);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 3rem;
+      background: rgba(250,246,240,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .brand span { color: var(--amber); font-style: italic; }
+
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--amber); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      padding-top: 64px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      position: relative;
+      padding-left: 2rem; padding-right: 2rem;
+      overflow: hidden;
+    }
+
+    /* Candlelight glow — the signature element */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 10%; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(194,135,58,0.18) 0%, rgba(194,135,58,0.06) 40%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: breathe 5s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scale(1.07); }
+    }
+
+    /* Floating particles */
+    .particles {
+      position: absolute; inset: 0;
+      pointer-events: none; overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: var(--amber);
+      border-radius: 50%;
+      opacity: 0;
+      animation: rise var(--dur, 8s) var(--delay, 0s) ease-in infinite;
+    }
+
+    @keyframes rise {
+      0%   { opacity: 0; transform: translateY(0) translateX(0); }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.2; }
+      100% { opacity: 0; transform: translateY(-300px) translateX(var(--drift, 20px)); }
+    }
+
+    .hero-inner { position: relative; z-index: 2; max-width: 780px; }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 2rem;
+      padding: 0.35rem 1.2rem;
+      border: 1px solid var(--amber-dim);
+      border-radius: 999px;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 9vw, 6.5rem);
+      font-weight: 300;
+      line-height: 1.0;
+      color: var(--ink);
+      margin-bottom: 2rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--amber);
+      font-weight: 400;
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--ink-soft);
+      max-width: 420px;
+      margin: 0 auto 3rem;
+      line-height: 1.85;
+    }
+
+    .btn-ghost {
+      display: inline-block;
+      padding: 0.8rem 2.2rem;
+      border: 1px solid var(--amber);
+      color: var(--amber);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.25s;
+    }
+    .btn-ghost:hover {
+      background: var(--amber);
+      color: var(--white);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--muted); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .scroll-hint .line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--amber), transparent);
+      animation: drip 2s ease-in-out infinite;
+    }
+    @keyframes drip {
+      0%, 100% { transform: scaleY(1); opacity: 0.5; }
+      50%       { transform: scaleY(1.2); opacity: 1; }
+    }
+
+    /* ── FEATURED ── */
+    .featured {
+      padding: 8rem 2rem;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 3rem;
+      display: flex; align-items: center; gap: 1.2rem;
+    }
+    .label::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+    .featured-q {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.7rem, 4vw, 2.8rem);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.35;
+      color: var(--ink);
+      margin-bottom: 2.5rem;
+      padding-left: 2rem;
+      border-left: 2px solid var(--amber);
+    }
+
+    .featured-body {
+      font-size: 1rem;
+      color: var(--ink-soft);
+      line-height: 1.95;
+      margin-bottom: 1.4rem;
+    }
+
+    .featured-body strong { color: var(--ink); font-weight: 500; }
+
+    .link-arrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      color: var(--amber);
+      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none; margin-top: 1rem;
+      transition: gap 0.2s;
+    }
+    .link-arrow:hover { gap: 1rem; }
+    .link-arrow::after { content: '→'; }
+
+    /* ── CARDS ── */
+    .cards-section {
+      background: var(--bg2);
+      padding: 7rem 2rem;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .cards-inner { max-width: 1100px; margin: 0 auto; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 2.2rem 2rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--amber), var(--amber-dim));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.07);
+      border-color: var(--amber-dim);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-tag {
+      font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--amber); margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem; font-weight: 600; line-height: 1.4;
+      color: var(--ink); margin-bottom: 1rem; flex: 1;
+    }
+
+    .card-excerpt {
+      font-size: 0.86rem; color: var(--muted); line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-foot {
+      font-size: 0.7rem; color: var(--muted);
+      border-top: 1px solid var(--rule);
+      padding-top: 1rem;
+      display: flex; justify-content: space-between;
+    }
+
+    /* ── VERSE ── */
+    .verse {
+      padding: 7rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .verse::before {
+      content: '"';
+      position: absolute;
+      top: -1rem; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20rem;
+      color: var(--amber);
+      opacity: 0.05;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .verse-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      font-style: italic;
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--ink);
+      max-width: 600px;
+      margin: 0 auto 1.5rem;
+      position: relative;
+    }
+
+    .verse-ref {
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    /* ── NEWSLETTER ── */
+    .newsletter {
+      background: var(--ink);
+      padding: 7rem 2rem;
+      text-align: center;
+    }
+
+    .newsletter .label { color: var(--amber-dim); justify-content: center; }
+    .newsletter .label::after { background: rgba(255,255,255,0.1); }
+
+    .newsletter h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 300;
+      color: var(--bg);
+      margin-bottom: 1rem;
+    }
+
+    .newsletter h2 em { font-style: italic; color: var(--amber-dim); }
+
+    .newsletter p {
+      color: rgba(250,246,240,0.55);
+      font-size: 0.92rem; max-width: 420px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .form-row {
+      display: flex;
+      max-width: 460px;
+      margin: 0 auto;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .form-row input {
+      flex: 1; padding: 0.9rem 1.3rem;
+      background: rgba(255,255,255,0.06);
+      border: none; outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      color: var(--bg);
+    }
+
+    .form-row input::placeholder { color: rgba(250,246,240,0.3); }
+
+    .form-row button {
+      padding: 0.9rem 1.6rem;
+      background: var(--amber);
+      border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--white);
+      transition: background 0.2s;
+    }
+    .form-row button:hover { background: #a8742e; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--rule);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.76rem; color: var(--muted);
+    }
+
+    footer a { color: var(--amber); text-decoration: none; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      .hero-title { font-size: 3rem; }
+      .hero::before { width: 320px; height: 320px; }
+      .cards-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+      .form-row { flex-direction: column; }
+      .form-row button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="brand" href="#">Have You <span>Seen This?</span></a>
+  <ul class="nav-links">
+    <li><a href="#questions">Questions</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#newsletter">Subscribe</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="particles" id="particles"></div>
+  <div class="hero-inner">
+    <span class="eyebrow">Deep dives into Scripture</span>
+    <h1 class="hero-title">The questions<br/>hiding <em>inside</em><br/>the verses</h1>
+    <p class="hero-sub">Most people read past them. We stop and ask why. Scripture rewards the curious.</p>
+    <a href="#questions" class="btn-ghost">Start Reading</a>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="line"></div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section class="featured" id="questions">
+  <div class="label">This Week's Question</div>
+  <blockquote class="featured-q">
+    "Be fruitful and multiply" — but were Adam and Eve even capable of having children in the Garden?
+  </blockquote>
+  <p class="featured-body">
+    Most read "be fruitful and multiply" and assume it's a straightforward command to have children. But something sits unresolved beneath the surface. <strong>Adam and Eve were in a state of innocence.</strong> Their biology, their understanding of intimacy, their very consciousness — all of it was untested. Was this a command they could even execute from where they stood?
+  </p>
+  <p class="featured-body">
+    And then there's this — they were placed in a garden. Not a city. Not a nation. A garden. The mathematics of multiplying from two people in one garden into a civilization is worth sitting with. The command already assumed what hadn't happened yet.
+  </p>
+  <a class="link-arrow" href="#">Continue the thought</a>
+</section>
+
+<!-- CARDS -->
+<section class="cards-section">
+  <div class="cards-inner">
+    <div class="label">More Questions</div>
+    <div class="cards-grid">
+
+      <a class="card" href="#">
+        <p class="card-tag">Genesis · Creation</p>
+        <h3 class="card-title">The earth was without form and void — but God never creates a mess</h3>
+        <p class="card-excerpt">If God is a God of order, what happened between Genesis 1:1 and 1:2? Was the chaos original — or was something already here before the beginning?</p>
+        <div class="card-foot"><span>Genesis 1:2</span><span>5 min read</span></div>
+      </a>
+
+      <a class="card" href="#">
+        <p class="card-tag">Genesis · Adam</p>
+        <h3 class="card-title">God asked Adam "where are you?" — but He already knew</h3>
+        <p class="card-excerpt">An omniscient God asking a location question. The question wasn't for God. It was for Adam — and it's still being asked today.</p>
+        <div class="card-foot"><span>Genesis 3:9</span><span>4 min read</span></div>
+      </a>
+
+      <a class="card" href="#">
+        <p class="card-tag">Psalms · David</p>
+        <h3 class="card-title">David's anger in the Psalms — is it okay to be furious at God?</h3>
+        <p class="card-excerpt">David didn't sanitize his prayers. He raged, accused, and demanded answers. Scripture preserved all of it. What does that tell us about what God can hold?</p>
+        <div class="card-foot"><span>Psalm 22</span><span>6 min read</span></div>
+      </a>
+
+      <a class="card" href="#">
+        <p class="card-tag">Gospels · Jesus</p>
+        <h3 class="card-title">The moment Jesus said nothing — and it was the loudest thing in the room</h3>
+        <p class="card-excerpt">Before Pilate, he answered nothing. The silence wasn't weakness. It was the only response that made sense when truth stands before a man who cannot receive it.</p>
+        <div class="card-foot"><span>Matthew 27:14</span><span>5 min read</span></div>
+      </a>
+
+      <a class="card" href="#">
+        <p class="card-tag">Exodus · Moses</p>
+        <h3 class="card-title">Moses saw God's back — what does it mean for God to have a back?</h3>
+        <p class="card-excerpt">Exodus 33:23 is one of the strangest verses in Scripture. A spirit-being. A physical attribute. A moment no one talks about enough.</p>
+        <div class="card-foot"><span>Exodus 33:23</span><span>4 min read</span></div>
+      </a>
+
+      <a class="card" href="#">
+        <p class="card-tag">Revelation · End Times</p>
+        <h3 class="card-title">Silence in heaven for half an hour — what was heavy enough to stop eternity?</h3>
+        <p class="card-excerpt">Heaven is described as a place of unceasing worship. Revelation 8:1 records it going completely quiet. What was in that seventh seal?</p>
+        <div class="card-foot"><span>Revelation 8:1</span><span>7 min read</span></div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- VERSE -->
+<section class="verse">
+  <p class="verse-text">"It is the glory of God to conceal a matter, but the glory of kings is to search it out."</p>
+  <p class="verse-ref">Proverbs 25 : 2</p>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter" id="newsletter">
+  <div class="label">Stay Curious</div>
+  <h2>New questions,<br/><em>every week</em></h2>
+  <p>No devotionals. No fluff. Just the verses people skip past — and the questions hiding inside them.</p>
+  <div class="form-row">
+    <input type="email" placeholder="your@email.com"/>
+    <button type="button">Subscribe</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Have You Seen This?</span>
+  <span>Made with curiosity · <a href="#">Back to top ↑</a></span>
+</footer>
+
+<script>
+  // Floating ember particles
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${20 + Math.random() * 60}%;
+      bottom: ${10 + Math.random() * 30}%;
+      --dur: ${6 + Math.random() * 8}s;
+      --delay: ${Math.random() * 8}s;
+      --drift: ${(Math.random() - 0.5) * 60}px;
+      width: ${1 + Math.random() * 2}px;
+      height: ${1 + Math.random() * 2}px;
+    `;
+    container.appendChild(p);
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.card, .featured-q, .featured-body').forEach(el => {
+    el.style.cssText += 'opacity:0; transform:translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease;';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
